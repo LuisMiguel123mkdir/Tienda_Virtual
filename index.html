@@ -9,14 +9,15 @@
 </head>
 <body>
   <h1>Tienda Virtual</h1>
-  <form id="formProducto">
-    <input type="text" id="nombre" placeholder="Nombre del producto" required />
-    <input type="text" id="descripcion" placeholder="Descripción" />
-    <input type="number" id="precio" placeholder="Precio" required />
-    <input type="number" id="stock" placeholder="Stock" required />
-    <input type="text" id="proveedor" placeholder="ID del proveedor" required />
-    <button type="submit">Agregar producto</button>
-  </form>
+  <h2>Agregar nuevo producto</h2>
+<form id="formProducto">
+  <input type="text" id="nombre" placeholder="Nombre del producto" required />
+  <input type="text" id="descripcion" placeholder="Descripción" />
+  <input type="number" id="precio" placeholder="Precio" required step="0.01" />
+  <input type="number" id="stock" placeholder="Stock" required />
+  <input type="text" id="proveedor" placeholder="ID del proveedor (vendor_id)" required />
+  <button type="submit">Agregar producto</button>
+</form>
   
   <div id="productos"></div>
 

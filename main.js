@@ -41,9 +41,12 @@ async function cargarProveedores() {
     return;
   }
 
+  
+  console.log('Proveedores cargados:', data);
+  
   const select = document.getElementById('proveedor');
   select.innerHTML = '<option value="">Selecciona un vendedor</option>';
-
+  
   data.forEach(vendor => {
     const option = document.createElement('option');
     option.value = vendor.id;
@@ -51,7 +54,7 @@ async function cargarProveedores() {
     select.appendChild(option);
   });
 }
-console.log('Proveedores cargados:', data);
+
 
 // 4. Función para agregar producto
 async function agregarProducto({ name, description, price, stock, vendor_id }) {
@@ -156,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarProveedores();
   });
   
+
 
 
 

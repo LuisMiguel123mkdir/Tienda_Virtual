@@ -13,30 +13,17 @@
   
   <h1>Tienda Virtual</h1>
 
-  <h2>Agregar nuevo proveedor</h2>
-<form id="formProveedor">
-  <input type="text" id="nombreTienda" placeholder="Nombre de la tienda" required />
-  <input type="text" id="descripcionTienda" placeholder="Descripción" />
-  <input type="text" id="zonasTienda" placeholder="Zonas (separadas por coma)" required />
-  <input type="text" id="usuarioID" placeholder="ID del usuario dueño (user_id)" required />
-  <button type="submit">Agregar proveedor</button>
-</form>
+  <form id="formVendedor">
+  <input type="text" id="nombreVendedor" placeholder="Nombre del vendedor" required />
+  <input type="text" id="contactoVendedor" placeholder="Contacto Telegram (@usuario o ID)" required />
+  <input type="text" id="zonaVendedor" placeholder="Zona" required />
+  <button type="submit">Agregar vendedor</button>
+  </form>
 
-  <h2>Agregar nuevo producto</h2>
-<form id="formProducto">
-  <input type="text" id="nombre" placeholder="Nombre del producto" required />
-  <input type="text" id="descripcion" placeholder="Descripción" />
-  <input type="number" id="precio" placeholder="Precio" required step="0.01" />
-  <input type="number" id="stock" placeholder="Stock" required />
-  <select id="proveedor" required>
-    <option value="">Selecciona un vendedor</option>
-  </select>  
-  <button type="submit">Agregar producto</button>
-</form>
   
-  <div id="productos"></div>
 </body>
 </html>
+
 
 
 

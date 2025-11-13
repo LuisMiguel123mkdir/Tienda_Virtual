@@ -1,22 +1,23 @@
 // 1. Conexión a Supabase
 const supabaseUrl = 'https://hgcvjrdyarydylvsiucq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // tu clave completa aquí
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// 2. Función para cargar productos
+// 2. Cargar productos
 async function cargarProductos() {
   const { data, error } = await supabase
     .from('products')
     .select('id, name, description, price')
     .eq('active', true);
 
-  if (error) {
-    console.error('Error al cargar productos:', error);
-    return;
-  }
-
   const contenedor = document.getElementById('productos');
   contenedor.innerHTML = '';
+
+  if (error) {
+    console.error('Error al cargar productos:', error);
+    contenedor.innerHTML = '<p>Error al cargar productos.</p>';
+    return;
+  }
 
   if (!data || data.length === 0) {
     contenedor.innerHTML = '<p>No hay productos disponibles.</p>';
@@ -35,20 +36,24 @@ async function cargarProductos() {
   });
 }
 
-// 3. Función para cargar proveedores
+// 3. Cargar proveedores
 async function cargarProveedores() {
   const { data, error } = await supabase
     .from('vendors')
     .select('id, store_name')
     .eq('active', true);
 
-  if (error) {
-    console.error('Error al cargar proveedores:', error);
-    return;
-  }
-
   const select = document.getElementById('proveedor');
   select.innerHTML = '<option value="">Selecciona un vendedor</option>';
+
+  if (error) {
+    console.error('Error al cargar proveedores:', error);
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'Error al cargar proveedores';
+    select.appendChild(option);
+    return;
+  }
 
   if (!data || data.length === 0) {
     const option = document.createElement('option');
@@ -58,6 +63,8 @@ async function cargarProveedores() {
     return;
   }
 
+  console.log('Proveedores cargados:', data);
+
   data.forEach(vendor => {
     const option = document.createElement('option');
     option.value = vendor.id;
@@ -66,7 +73,7 @@ async function cargarProveedores() {
   });
 }
 
-// 4. Función para agregar producto
+// 4. Agregar producto
 async function agregarProducto({ name, description, price, stock, vendor_id }) {
   const { data, error } = await supabase
     .from('products')
@@ -92,7 +99,7 @@ async function agregarProducto({ name, description, price, stock, vendor_id }) {
   }
 }
 
-// 5. Función para agregar proveedor
+// 5. Agregar proveedor
 async function agregarProveedor({ store_name, description, zones, user_id }) {
   const { data, error } = await supabase
     .from('vendors')
@@ -113,11 +120,11 @@ async function agregarProveedor({ store_name, description, zones, user_id }) {
   } else {
     console.log('Proveedor agregado:', data);
     alert('Proveedor agregado correctamente');
-    cargarProveedores();
+    cargarProveedores(); // recarga el desplegable
   }
 }
 
-// 6. Ejecutar todo al cargar la página
+// 6. Listeners y carga inicial
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('formProducto').addEventListener('submit', function (e) {
     e.preventDefault();

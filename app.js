@@ -6,7 +6,7 @@ const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 // ✅ Cargar productos desde la tabla 'products'
 async function cargarProductos() {
   const { data, error } = await supabase
-    .from('products') // ← esta línea faltaba
+    .from('products') 
     .select('id, name, description, price')
     .eq('active', true);
 
@@ -29,6 +29,41 @@ async function cargarProductos() {
     contenedor.appendChild(div);
   });
 }
+
+//agregar proveedor
+async function agregarProveedor({ store_name, description, zones, user_id }) {
+    const { data, error } = await supabase
+      .from('vendors')
+      .insert([
+        {
+          store_name,
+          description,
+          zones,
+          user_id,
+          active: true,
+          created_at: new Date().toISOString()
+        }
+      ]);
+  
+    if (error) {
+      console.error('Error al agregar proveedor:', error);
+      alert('Error al agregar proveedor');
+    } else {
+      console.log('Proveedor agregado:', data);
+      alert('Proveedor agregado correctamente');
+    }
+  }
+  
+  document.getElementById('formProveedor').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const store_name = document.getElementById('nombreTienda').value;
+    const description = document.getElementById('descripcionTienda').value;
+    const zonasTexto = document.getElementById('zonasTienda').value;
+    const zones = zonasTexto.split(',').map(z => z.trim()); // convierte a array
+    const user_id = document.getElementById('usuarioID').value;
+  
+    agregarProveedor({ store_name, description, zones, user_id });
+  });
 
 cargarProductos();
 

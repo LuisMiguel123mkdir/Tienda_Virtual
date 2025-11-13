@@ -104,9 +104,8 @@ async function cargarProveedores() {
     }
   
     const select = document.getElementById('proveedor');
-    
-    select.innerHTML = '<option value="">Selecciona un proveedor</option>';
-    
+    select.innerHTML = '<option value="">Selecciona un vendedor</option>';
+  
     data.forEach(vendor => {
       const option = document.createElement('option');
       option.value = vendor.id;
@@ -114,8 +113,9 @@ async function cargarProveedores() {
       select.appendChild(option);
     });
   }
-
+  
   document.addEventListener('DOMContentLoaded', () => {
     cargarProductos();
     cargarProveedores();
   });
+  

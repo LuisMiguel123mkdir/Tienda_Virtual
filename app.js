@@ -91,3 +91,28 @@ async function agregarProducto({ name, description, price, stock, vendor_id }) {
     alert('Producto agregado correctamente');
   }
 }
+
+async function cargarProveedores() {
+    const { data, error } = await supabase
+      .from('vendors')
+      .select('id, store_name')
+      .eq('active', true);
+  
+    if (error) {
+      console.error('Error al cargar proveedores:', error);
+      return;
+    }
+  
+    const select = document.getElementById('proveedor');
+    data.forEach(vendor => {
+      const option = document.createElement('option');
+      option.value = vendor.id;
+      option.textContent = vendor.store_name;
+      select.appendChild(option);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    cargarProductos();
+    cargarProveedores();
+  });

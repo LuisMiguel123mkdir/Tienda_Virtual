@@ -119,3 +119,5 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+console.log('Respuesta completa de Supabase:', { data, error });
+

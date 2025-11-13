@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const vendor_id = document.getElementById('proveedor').value;
   
       agregarProducto({ name, description, price, stock, vendor_id });
+      cargarProveedores();
     });
   
     document.getElementById('formProveedor').addEventListener('submit', function (e) {
@@ -155,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarProveedores();
   });
   
+
 
 
 

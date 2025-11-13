@@ -23,16 +23,22 @@ async function agregarVendedor({ nombre, contacto, zona }) {
 
   // Cargar vendedores en el desplegable
 async function cargarVendedoresEnSelect() {
+  const select = document.getElementById('vendedorProducto');
+  if (!select) {
+    console.error('Elemento <select id="vendedorProducto"> no encontrado en el DOM');
+    return;
+  }
+
+  select.innerHTML = '<option value="">Selecciona un vendedor</option>';
+  select.disabled = false;
+
   const { data, error } = await supabase
     .from('vendedor')
     .select('id, nombre');
 
-  const select = document.getElementById('vendedorProducto');
-  select.innerHTML = '<option value="">Selecciona un vendedor</option>';
-  select.setAttribute('disabled', false);
+  console.log('Respuesta completa de Supabase:', { data, error });
 
   if (error) {
-    console.error('Error al cargar vendedores:', error);
     const option = document.createElement('option');
     option.value = '';
     option.textContent = 'Error al cargar vendedores';
@@ -120,4 +126,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log('Respuesta completa de Supabase:', { data, error });
+
 

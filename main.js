@@ -8,7 +8,7 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
   }
 });
 
-// Función para agregar vendedor
+// 2. Función para agregar vendedor
 async function agregarVendedor({ nombre, contacto, zona }) {
   const { data, error } = await supabase
     .from('vendedor')
@@ -21,7 +21,17 @@ async function agregarVendedor({ nombre, contacto, zona }) {
       }
     ]);
 
-  // Cargar vendedores en el desplegable
+  if (error) {
+    console.error('Error al agregar vendedor:', error);
+    alert('Error al agregar vendedor');
+  } else {
+    console.log('Vendedor agregado:', data);
+    alert('Vendedor agregado correctamente');
+    cargarVendedoresEnSelect(); // recarga el desplegable
+  }
+}
+
+// 3. Función para cargar vendedores en el desplegable
 async function cargarVendedoresEnSelect() {
   const select = document.getElementById('vendedorProducto');
   if (!select) {
@@ -62,7 +72,7 @@ async function cargarVendedoresEnSelect() {
   });
 }
 
-// Agregar producto
+// 4. Función para agregar producto
 async function agregarProducto({ producto, precio, vendedor_id }) {
   const { data, error } = await supabase
     .from('producto')
@@ -84,9 +94,18 @@ async function agregarProducto({ producto, precio, vendedor_id }) {
   }
 }
 
-// Listener del formulario
+// 5. Listeners del DOM
 document.addEventListener('DOMContentLoaded', () => {
   cargarVendedoresEnSelect();
+
+  document.getElementById('formVendedor').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const nombre = document.getElementById('nombreVendedor').value;
+    const contacto = document.getElementById('contactoVendedor').value;
+    const zona = document.getElementById('zonaVendedor').value;
+
+    agregarVendedor({ nombre, contacto, zona });
+  });
 
   document.getElementById('formProducto').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -101,32 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     agregarProducto({ producto, precio, vendedor_id });
   });
-});
-  
-
-  if (error) {
-    console.error('Error al agregar vendedor:', error);
-    alert('Error al agregar vendedor');
-  } else {
-    console.log('Vendedor agregado:', data);
-    alert('Vendedor agregado correctamente');
-  }
-}
-
-// Listener del formulario
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('formVendedor').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const nombre = document.getElementById('nombreVendedor').value;
-    const contacto = document.getElementById('contactoVendedor').value;
-    const zona = document.getElementById('zonaVendedor').value;
-
-    agregarVendedor({ nombre, contacto, zona });
-  });
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  cargarVendedoresEnSelect();
 });
 
 

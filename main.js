@@ -63,7 +63,7 @@ async function cargarProveedores() {
   if (!data || data.length === 0) {
     const option = document.createElement('option');
     option.value = '';
-    option.textContent = 'No hay proveedores disponibles';
+    option.textContent = 'No hay vendedor disponibles';
     select.appendChild(option);
     return;
   }
@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarProductos();
   cargarProveedores();
 });
+
 
 
 

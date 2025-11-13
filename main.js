@@ -21,6 +21,83 @@ async function agregarVendedor({ nombre, contacto, zona }) {
       }
     ]);
 
+  // Cargar vendedores en el desplegable
+async function cargarVendedoresEnSelect() {
+  const { data, error } = await supabase
+    .from('vendedor')
+    .select('id, nombre');
+
+  const select = document.getElementById('vendedorProducto');
+  select.innerHTML = '<option value="">Selecciona un vendedor</option>';
+  select.setAttribute('disabled', false);
+
+  if (error) {
+    console.error('Error al cargar vendedores:', error);
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'Error al cargar vendedores';
+    select.appendChild(option);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'No hay vendedores disponibles';
+    select.appendChild(option);
+    return;
+  }
+
+  data.forEach(vendedor => {
+    const option = document.createElement('option');
+    option.value = vendedor.id;
+    option.textContent = vendedor.nombre;
+    select.appendChild(option);
+  });
+}
+
+// Agregar producto
+async function agregarProducto({ producto, precio, vendedor_id }) {
+  const { data, error } = await supabase
+    .from('producto')
+    .insert([
+      {
+        producto,
+        precio,
+        vendedor_id,
+        created_at: new Date().toISOString()
+      }
+    ]);
+
+  if (error) {
+    console.error('Error al agregar producto:', error);
+    alert('Error al agregar producto');
+  } else {
+    console.log('Producto agregado:', data);
+    alert('Producto agregado correctamente');
+  }
+}
+
+// Listener del formulario
+document.addEventListener('DOMContentLoaded', () => {
+  cargarVendedoresEnSelect();
+
+  document.getElementById('formProducto').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const producto = document.getElementById('nombreProducto').value;
+    const precio = parseFloat(document.getElementById('precioProducto').value);
+    const vendedor_id = document.getElementById('vendedorProducto').value;
+
+    if (!vendedor_id) {
+      alert('Selecciona un vendedor válido');
+      return;
+    }
+
+    agregarProducto({ producto, precio, vendedor_id });
+  });
+});
+  
+
   if (error) {
     console.error('Error al agregar vendedor:', error);
     alert('Error al agregar vendedor');
@@ -41,3 +118,4 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarVendedor({ nombre, contacto, zona });
   });
 });
+

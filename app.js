@@ -127,6 +127,31 @@ document.getElementById('formProveedor').addEventListener('submit', function (e)
 
 // 7. Ejecutar funciones al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-  cargarProductos();
-  cargarProveedores();
-});
+    // Listeners de formularios
+    document.getElementById('formProducto').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('nombre').value;
+      const description = document.getElementById('descripcion').value;
+      const price = parseFloat(document.getElementById('precio').value);
+      const stock = parseInt(document.getElementById('stock').value);
+      const vendor_id = document.getElementById('proveedor').value;
+  
+      agregarProducto({ name, description, price, stock, vendor_id });
+    });
+  
+    document.getElementById('formProveedor').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const store_name = document.getElementById('nombreTienda').value;
+      const description = document.getElementById('descripcionTienda').value;
+      const zonasTexto = document.getElementById('zonasTienda').value;
+      const zones = zonasTexto.split(',').map(z => z.trim());
+      const user_id = document.getElementById('usuarioID').value;
+  
+      agregarProveedor({ store_name, description, zones, user_id });
+    });
+  
+    // Ejecutar funciones
+    cargarProductos();
+    cargarProveedores();
+  });
+  

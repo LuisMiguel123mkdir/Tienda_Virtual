@@ -1,6 +1,6 @@
 // 1. Conexión a Supabase
 const supabaseUrl = 'https://hgcvjrdyarydylvsiucq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnY3ZqcmR5YXJ5ZHlsdnNpdWNxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Mjk2MTc1NSwiZXhwIjoyMDc4NTM3NzU1fQ.YXaaBlHK9HD2rjLqRA1JeTQNjOP2SAKgB0Tjs_kTTEA';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnY3ZqcmR5YXJ5ZHlsdnNpdWNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NjE3NTUsImV4cCI6MjA3ODUzNzc1NX0.B7zFRd4TKEMmo-eBLjJT-G9yhzVl7iSMrvDLGXHcMTs';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 // 2. Función para cargar productos
@@ -144,4 +144,5 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarProductos();
   cargarProveedores();
 });
+
 

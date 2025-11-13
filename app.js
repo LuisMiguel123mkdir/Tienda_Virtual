@@ -130,22 +130,3 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarProductos();
   cargarProveedores();
 });
-
-async function probarConexion() {
-    const { data, error } = await supabase
-      .from('vendors')
-      .select('id')
-      .limit(1);
-  
-    if (error) {
-      console.error('Supabase no responde:', error);
-      alert('Error de conexión con Supabase');
-    } else {
-      console.log('Conexión OK:', data);
-      alert('Conexión con Supabase exitosa');
-    }
-  }
-  document.addEventListener('DOMContentLoaded', () => {
-    probarConexion();
-  });
-  

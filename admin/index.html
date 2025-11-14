@@ -12,7 +12,7 @@
   // Verificar si está logueado
   if (localStorage.getItem('isAdmin') !== 'true') {
     // Si no está logueado, redirigir al login
-    window.location.href = '../login.html';
+    window.location.href = '../Principal.html';
   }
 </script>
     
@@ -28,7 +28,7 @@
       <div class="navbar-right">
         <select id="menuOpciones" onchange="irASeccion(this.value)"> 
           <option value="">Menú</option>
-          <option value="../index.html">Principal</option> 
+          <option value="../Principal.html">Principal</option> 
           <!-- En el futuro puedes añadir más opciones aquí --> 
         </select> 
       </div> 
@@ -68,3 +68,4 @@
     <script> function logout() { localStorage.removeItem('isAdmin'); window.location.href = '../login.html'; } </script> 
   </body> 
 </html>
+

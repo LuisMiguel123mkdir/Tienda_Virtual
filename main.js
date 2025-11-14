@@ -12,14 +12,7 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
 async function agregarVendedor({ nombre, contacto, zona }) {
   const { data, error } = await supabase
     .from('vendedor')
-    .insert([
-      {
-        nombre,
-        contacto,
-        zona,
-        created_at: new Date().toISOString()
-      }
-    ]);
+    .insert([{ nombre, contacto, zona, created_at: new Date().toISOString() }]);
 
   if (error) {
     console.error('Error al agregar vendedor:', error);
@@ -27,39 +20,28 @@ async function agregarVendedor({ nombre, contacto, zona }) {
   } else {
     console.log('Vendedor agregado:', data);
     alert('Vendedor agregado correctamente');
-    cargarVendedoresEnSelect(); // recarga el desplegable
+    cargarVendedoresEnSelect();     // recarga el desplegable de productos
+    cargarVendedoresParaEliminar(); // recarga el desplegable de eliminación
   }
 }
 
-//3. Función para cargar vendedores en el desplegable de eliminación
+// 3. Función para cargar vendedores en el desplegable de eliminación
 async function cargarVendedoresParaEliminar() {
   const select = document.getElementById('vendedorEliminar');
-  if (!select) {
-    console.error('Elemento <select id="vendedorEliminar"> no encontrado en el DOM');
-    return;
-  }
+  if (!select) return;
 
   select.innerHTML = '<option value="">Selecciona un vendedor</option>';
 
-  const { data, error } = await supabase
-    .from('vendedor')
-    .select('id, nombre');
-
-  console.log('Respuesta de Supabase (eliminar):', { data, error });
+  const { data, error } = await supabase.from('vendedor').select('id, nombre');
 
   if (error) {
-    const option = document.createElement('option');
-    option.value = '';
-    option.textContent = 'Error al cargar vendedores';
-    select.appendChild(option);
+    console.error('Error al cargar vendedores:', error);
+    select.innerHTML = '<option value="">Error al cargar vendedores</option>';
     return;
   }
 
   if (!data || data.length === 0) {
-    const option = document.createElement('option');
-    option.value = '';
-    option.textContent = 'No hay vendedores disponibles';
-    select.appendChild(option);
+    select.innerHTML = '<option value="">No hay vendedores disponibles</option>';
     return;
   }
 
@@ -71,53 +53,37 @@ async function cargarVendedoresParaEliminar() {
   });
 }
 
-//4. Función para eliminar vendedor
+// 4. Función para eliminar vendedor
 async function eliminarVendedor(vendedor_id) {
-  const { error } = await supabase
-    .from('vendedor')
-    .delete()
-    .eq('id', vendedor_id);
+  const { error } = await supabase.from('vendedor').delete().eq('id', vendedor_id);
 
   if (error) {
     console.error('Error al eliminar vendedor:', error);
     alert('Error al eliminar vendedor');
   } else {
     alert('Vendedor eliminado correctamente');
-    cargarVendedoresParaEliminar(); // recarga la lista
-    cargarVendedoresEnSelect();     // también recarga el desplegable de productos
+    cargarVendedoresParaEliminar();
+    cargarVendedoresEnSelect();
   }
 }
 
-// 5. Función para cargar vendedores en el desplegable
+// 5. Función para cargar vendedores en el desplegable de productos
 async function cargarVendedoresEnSelect() {
   const select = document.getElementById('vendedorProducto');
-  if (!select) {
-    console.error('Elemento <select id="vendedorProducto"> no encontrado en el DOM');
-    return;
-  }
+  if (!select) return;
 
   select.innerHTML = '<option value="">Selecciona un vendedor</option>';
-  select.disabled = false;
 
-  const { data, error } = await supabase
-    .from('vendedor')
-    .select('id, nombre');
-
-  console.log('Respuesta completa de Supabase:', { data, error });
+  const { data, error } = await supabase.from('vendedor').select('id, nombre');
 
   if (error) {
-    const option = document.createElement('option');
-    option.value = '';
-    option.textContent = 'Error al cargar vendedores';
-    select.appendChild(option);
+    console.error('Error al cargar vendedores:', error);
+    select.innerHTML = '<option value="">Error al cargar vendedores</option>';
     return;
   }
 
   if (!data || data.length === 0) {
-    const option = document.createElement('option');
-    option.value = '';
-    option.textContent = 'No hay vendedores disponibles';
-    select.appendChild(option);
+    select.innerHTML = '<option value="">No hay vendedores disponibles</option>';
     return;
   }
 
@@ -133,14 +99,7 @@ async function cargarVendedoresEnSelect() {
 async function agregarProducto({ producto, precio, vendedor_id }) {
   const { data, error } = await supabase
     .from('producto')
-    .insert([
-      {
-        producto,
-        precio,
-        vendedor_id,
-        created_at: new Date().toISOString()
-      }
-    ]);
+    .insert([{ producto, precio, vendedor_id, created_at: new Date().toISOString() }]);
 
   if (error) {
     console.error('Error al agregar producto:', error);
@@ -151,20 +110,23 @@ async function agregarProducto({ producto, precio, vendedor_id }) {
   }
 }
 
-// 7. Listeners del DOM
+// 7. Listeners del DOM (todo en un solo bloque)
 document.addEventListener('DOMContentLoaded', () => {
+  // Cargar listas al inicio
   cargarVendedoresEnSelect();
+  cargarVendedoresParaEliminar();
 
-  document.getElementById('formVendedor').addEventListener('submit', function (e) {
+  // Formulario de agregar vendedor
+  document.getElementById('formVendedor').addEventListener('submit', e => {
     e.preventDefault();
     const nombre = document.getElementById('nombreVendedor').value;
     const contacto = document.getElementById('contactoVendedor').value;
     const zona = document.getElementById('zonaVendedor').value;
-
     agregarVendedor({ nombre, contacto, zona });
   });
 
-  document.getElementById('formProducto').addEventListener('submit', function (e) {
+  // Formulario de agregar producto
+  document.getElementById('formProducto').addEventListener('submit', e => {
     e.preventDefault();
     const producto = document.getElementById('nombreProducto').value;
     const precio = parseFloat(document.getElementById('precioProducto').value);
@@ -174,16 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Selecciona un vendedor válido');
       return;
     }
-
     agregarProducto({ producto, precio, vendedor_id });
   });
-});
 
-// Listener del formulario de eliminación
-document.addEventListener('DOMContentLoaded', () => {
-  cargarVendedoresParaEliminar();
-
-  document.getElementById('formEliminarVendedor').addEventListener('submit', function (e) {
+  // Formulario de eliminar vendedor
+  document.getElementById('formEliminarVendedor').addEventListener('submit', e => {
     e.preventDefault();
     const vendedor_id = document.getElementById('vendedorEliminar').value;
 
@@ -191,11 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Selecciona un vendedor válido');
       return;
     }
-
     eliminarVendedor(vendedor_id);
   });
 });
-
-
-
-

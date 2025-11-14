@@ -19,6 +19,29 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
     
     <script src="main.js">
+
+     <h1>Panel de Administración</h1>
+
+  <!-- Formulario para agregar/modificar admin -->
+  <h2>Agregar / Modificar Administrador</h2>
+  <form id="formAdmin">
+    <input type="text" id="nombreAdmin" placeholder="Nombre de usuario" required />
+    <input type="password" id="contrasenaAdmin" placeholder="Contraseña" required />
+    <button type="submit">Guardar</button>
+  </form>
+  <p id="mensajeAdmin"></p>
+
+  <!-- Formulario para eliminar admin -->
+  <h2>Eliminar Administrador</h2>
+  <form id="formEliminarAdmin">
+    <select id="adminEliminar" required></select>
+    <button type="submit">Eliminar</button>
+  </form>
+  <p id="mensajeEliminar"></p>
+
+  <button onclick="logout()">Cerrar sesión</button>
+
+  <script>
       
     </script> <!-- Barra superior --> <nav class="navbar"> 
       <div class="navbar-left"> 
@@ -76,6 +99,7 @@
 
   </body> 
 </html>
+
 
 
 

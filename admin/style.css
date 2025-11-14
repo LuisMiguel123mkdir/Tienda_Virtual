@@ -28,15 +28,10 @@ h1 {
   font-size: 14px;
 }
 
-#vendedorProducto {
-  width: 150px;
-  padding: 6px;
-  font-size: 10px;
-}
-
 .producto {
   background: white;
   padding: 10px;
   margin: 10px 0;
   border-radius: 5px;
 }
+

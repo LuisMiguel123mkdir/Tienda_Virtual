@@ -7,6 +7,14 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  
+  <script>
+  // Verificar si está logueado
+  if (localStorage.getItem('isAdmin') !== 'true') {
+    // Si no está logueado, redirigir al login
+    window.location.href = '../login.html';
+  }
+</script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="main.js"></script>
@@ -75,6 +83,7 @@
 
 </body>
 </html>
+
 
 
 

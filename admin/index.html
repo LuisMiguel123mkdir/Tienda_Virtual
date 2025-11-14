@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel Admin</title>
   <link rel="stylesheet" href="../style.css" />
-</head>
-<body>
-  <!-- Protección: verificar sesión -->
+
+   <!-- Protección: verificar sesión -->
   <script>
   // Verificar si está logueado
   if (localStorage.getItem('isAdmin') !== 'true') {
@@ -17,6 +16,8 @@
 </script>
 
 
+</head>
+<body>
   <!-- Barra superior -->
   <nav class="navbar">
     <div class="navbar-left">
@@ -77,4 +78,5 @@
   </script>
 </body>
 </html>
+
 

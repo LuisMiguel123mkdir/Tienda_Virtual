@@ -63,11 +63,20 @@
     
     </form> <div id="listaProductos"></div> 
     
-    <button onclick="logout()">Cerrar sesión</button> 
-    
-    <script> function logout() { localStorage.removeItem('isAdmin'); window.location.href = '../index.html'; } </script> 
+    <button onclick="logout()">Cerrar sesión</button>
+
+<script>
+  function logout() {
+    // Eliminar la sesión guardada
+    localStorage.removeItem('isAdmin');
+    // Redirigir a la página principal
+    window.location.href = '../index.html';
+  }
+</script>
+
   </body> 
 </html>
+
 
 
 

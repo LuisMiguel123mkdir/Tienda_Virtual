@@ -8,6 +8,73 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
   }
 });
 
+// Cargar lista de admins en el select
+    async function cargarAdmins() {
+      const { data, error } = await supabase.from('administrador').select('id, nombre');
+      if (!error && data) {
+        const select = document.getElementById('adminEliminar');
+        select.innerHTML = "";
+        data.forEach(admin => {
+          const option = document.createElement('option');
+          option.value = admin.id;
+          option.textContent = admin.nombre;
+          select.appendChild(option);
+        });
+      }
+    }
+// Guardar o modificar admin
+    document.getElementById('formAdmin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombreAdmin').value.trim();
+      const contrasena = document.getElementById('contrasenaAdmin').value.trim();
+
+      if (contrasena === "") {
+        document.getElementById('mensajeAdmin').textContent = "La contraseña no puede estar en blanco.";
+        return;
+      }
+
+      // Verificar si ya existe
+      const { data: existente } = await supabase
+        .from('administrador')
+        .select('id')
+        .eq('nombre', nombre)
+        .single();
+
+      if (existente) {
+        // Actualizar contraseña
+        const { error } = await supabase
+          .from('administrador')
+          .update({ contrasena })
+          .eq('id', existente.id);
+
+        document.getElementById('mensajeAdmin').textContent = error ? "Error al modificar." : "Contraseña actualizada.";
+      } else {
+        // Insertar nuevo admin
+        const { error } = await supabase
+          .from('administrador')
+          .insert([{ nombre, contrasena }]);
+
+        document.getElementById('mensajeAdmin').textContent = error ? "Error al agregar." : "Administrador agregado.";
+      }
+
+      cargarAdmins();
+    });
+
+    // Eliminar admin
+    document.getElementById('formEliminarAdmin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('adminEliminar').value;
+
+      const { error } = await supabase.from('administrador').delete().eq('id', id);
+
+      document.getElementById('mensajeEliminar').textContent = error ? "Error al eliminar." : "Administrador eliminado.";
+      cargarAdmins();
+    });
+
+    // Inicializar
+    cargarAdmins();
+  </script>
+
 // Mostrar productos de un vendedor seleccionado
 async function mostrarProductosDeVendedor(vendedor_id) {
   const contenedor = document.getElementById('listaProductos');
@@ -208,3 +275,4 @@ document.addEventListener('DOMContentLoaded', () => {
     eliminarVendedor(vendedor_id);
   });
 });
+

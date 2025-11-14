@@ -21,29 +21,7 @@
     <script src="main.js">
 
      <h1>Panel de Administración</h1>
-    </script>
-    
-  <!-- Formulario para agregar/modificar admin -->
-  <h2>Agregar / Modificar Administrador</h2>
-  <form id="formAdmin">
-    <input type="text" id="nombreAdmin" placeholder="Nombre de usuario" required />
-    <input type="password" id="contrasenaAdmin" placeholder="Contraseña" required />
-    <button type="submit">Guardar</button>
-  </form>
-  <p id="mensajeAdmin"></p>
-
-  <!-- Formulario para eliminar admin -->
-  <h2>Eliminar Administrador</h2>
-  <form id="formEliminarAdmin">
-    <select id="adminEliminar" required></select>
-    <button type="submit">Eliminar</button>
-  </form>
-  <p id="mensajeEliminar"></p>
-
-  <button onclick="logout()">Cerrar sesión</button>
-
-  <script>
-      
+         
     </script> <!-- Barra superior --> <nav class="navbar"> 
       <div class="navbar-left"> 
         <h1>Panel Admin</h1> 
@@ -68,6 +46,29 @@
       if (localStorage.getItem('isAdmin') !== 'true') { 
         window.location.href = '../login.html'; } 
     </script> 
+</script>
+    
+  <!-- Formulario para agregar/modificar admin -->
+  <p2>Agregar / Modificar Administrador</p2>
+  <form id="formAdmin">
+    <input type="text" id="nombreAdmin" placeholder="Nombre de usuario" required />
+    <input type="password" id="contrasenaAdmin" placeholder="Contraseña" required />
+    <button type="submit">Guardar</button>
+  </form>
+  <p id="mensajeAdmin"></p>
+
+  <!-- Formulario para eliminar admin -->
+  <p2>Eliminar Administrador</p2>
+  <form id="formEliminarAdmin">
+    <select id="adminEliminar" required></select>
+    <button type="submit">Eliminar</button>
+  </form>
+  <p id="mensajeEliminar"></p>
+
+  <button onclick="logout()">Cerrar sesión</button>
+
+  <script>
+    
     <p2>Modificar Vendedor</p2>
     <form id="formVendedor"> 
       <input type="text" id="nombreVendedor" placeholder="Nombre del vendedor" required />
@@ -100,3 +101,4 @@
 
   </body> 
 </html>
+

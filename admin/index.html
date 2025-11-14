@@ -10,20 +10,21 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="main.js"></script>
-  
+      
+  <!-- Barra superior -->
   <nav class="navbar">
     <div class="navbar-left">
-      <h1>Mi Tienda</h1>
+      <h1>Panel Admin</h1>
     </div>
     <div class="navbar-right">
       <select id="menuOpciones" onchange="irASeccion(this.value)">
         <option value="">Menú</option>
-        <option value="index.html">Administrador</option>
+        <option value="../index.html">Principal</option>
         <!-- En el futuro puedes añadir más opciones aquí -->
       </select>
     </div>
   </nav>
-
+  
   <p2>Modificar Vendedor</p2>
   <form id="formVendedor">
   <input type="text" id="nombreVendedor" placeholder="Nombre del vendedor" required />
@@ -47,6 +48,7 @@
 
 </body>
 </html>
+
 
 
 

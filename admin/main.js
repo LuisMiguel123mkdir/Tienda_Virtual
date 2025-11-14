@@ -73,7 +73,6 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
 
     // Inicializar
     cargarAdmins();
-  </script>
 
 // Mostrar productos de un vendedor seleccionado
 async function mostrarProductosDeVendedor(vendedor_id) {
@@ -275,4 +274,5 @@ document.addEventListener('DOMContentLoaded', () => {
     eliminarVendedor(vendedor_id);
   });
 });
+
 

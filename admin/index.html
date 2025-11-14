@@ -9,11 +9,13 @@
 <body>
   <!-- Protección: verificar sesión -->
   <script>
-    if (localStorage.getItem('isAdmin') !== 'true') {
-      // Si no está logueado, redirigir al login
-      window.location.href = '../login.html';
-    }
-  </script>
+  // Verificar si está logueado
+  if (localStorage.getItem('isAdmin') !== 'true') {
+    // Si no está logueado, redirigir a la página principal
+    window.location.href = '../index.html';
+  }
+</script>
+
 
   <!-- Barra superior -->
   <nav class="navbar">
@@ -75,3 +77,4 @@
   </script>
 </body>
 </html>
+

@@ -11,10 +11,11 @@
   <script>
   // Verificar si está logueado
   if (localStorage.getItem('isAdmin') !== 'true') {
-    // Si no está logueado, redirigir al login
+    // Si no está logueado, redirigir a la página principal
     window.location.href = '../index.html';
   }
 </script>
+
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="main.js"></script>
@@ -83,6 +84,7 @@
 
 </body>
 </html>
+
 
 
 

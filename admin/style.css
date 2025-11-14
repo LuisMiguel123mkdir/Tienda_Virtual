@@ -1,12 +1,32 @@
 body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background-color: #f5f5f5;
-  }
-  
-  h1 {
-    color: #333;
-  }
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f5f5f5;
+  margin: 0; 
+}
+
+h1 {
+  color: #333;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2c3e50;
+  color: white;
+  padding: 10px 20px;
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.navbar-right select {
+  padding: 5px;
+  font-size: 14px;
+}
 
 #vendedorProducto {
   width: 150px;
@@ -14,12 +34,9 @@ body {
   font-size: 10px;
 }
 
-  .producto {
-    background: white;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-  }
-
-  
-
+.producto {
+  background: white;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+}

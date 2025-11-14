@@ -35,6 +35,13 @@
       }
     }
   </script>
+
+  <script>
+    // Verificar sesión
+    if (localStorage.getItem('isAdmin') !== 'true') {
+      window.location.href = '../login.html';
+    }
+  </script>
   
   <p2>Modificar Vendedor</p2>
   <form id="formVendedor">
@@ -59,6 +66,7 @@
 
 </body>
 </html>
+
 
 
 

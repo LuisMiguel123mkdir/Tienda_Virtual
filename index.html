@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tienda Virtual</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Página Principal</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Barra superior -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <h1>Mi Tienda</h1>
+    </div>
+    <div class="navbar-right">
+      <select id="menuOpciones" onchange="irASeccion(this.value)">
+        <option value="">Menú</option>
+        <option value="admin/index.html">Administrador</option>
+        <!-- En el futuro puedes añadir más opciones aquí -->
+      </select>
+    </div>
+  </nav>
 
- <a href="admin/index.html">Ir al panel de administración</a>
+  <!-- Contenido principal -->
+  <main>
+    <p>Bienvenido a la página principal. Aquí irá el contenido público.</p>
+  </main>
 
-
+  <script>
+    function irASeccion(url) {
+      if (url) {
+        window.location.href = url;
+      }
+    }
+  </script>
 </body>
 </html>
-
-
-
-
-
-
 
 
 

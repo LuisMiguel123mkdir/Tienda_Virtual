@@ -21,9 +21,10 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
   }
 
   // Guardar sesión en localStorage
-  localStorage.setItem('isAdmin', 'true');
+localStorage.setItem('isAdmin', 'true');
 
-  // Redirigir al panel admin
-  window.location.href = 'admin/index.html';
+// Redirigir al panel admin
+window.location.href = 'admin/index.html';
+
 });
 

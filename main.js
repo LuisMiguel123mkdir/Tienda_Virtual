@@ -31,7 +31,64 @@ async function agregarVendedor({ nombre, contacto, zona }) {
   }
 }
 
-// 3. Función para cargar vendedores en el desplegable
+//3. Función para cargar vendedores en el desplegable de eliminación
+async function cargarVendedoresParaEliminar() {
+  const select = document.getElementById('vendedorEliminar');
+  if (!select) {
+    console.error('Elemento <select id="vendedorEliminar"> no encontrado en el DOM');
+    return;
+  }
+
+  select.innerHTML = '<option value="">Selecciona un vendedor</option>';
+
+  const { data, error } = await supabase
+    .from('vendedor')
+    .select('id, nombre');
+
+  console.log('Respuesta de Supabase (eliminar):', { data, error });
+
+  if (error) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'Error al cargar vendedores';
+    select.appendChild(option);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'No hay vendedores disponibles';
+    select.appendChild(option);
+    return;
+  }
+
+  data.forEach(vendedor => {
+    const option = document.createElement('option');
+    option.value = vendedor.id;
+    option.textContent = vendedor.nombre;
+    select.appendChild(option);
+  });
+}
+
+//4. Función para eliminar vendedor
+async function eliminarVendedor(vendedor_id) {
+  const { error } = await supabase
+    .from('vendedor')
+    .delete()
+    .eq('id', vendedor_id);
+
+  if (error) {
+    console.error('Error al eliminar vendedor:', error);
+    alert('Error al eliminar vendedor');
+  } else {
+    alert('Vendedor eliminado correctamente');
+    cargarVendedoresParaEliminar(); // recarga la lista
+    cargarVendedoresEnSelect();     // también recarga el desplegable de productos
+  }
+}
+
+// 5. Función para cargar vendedores en el desplegable
 async function cargarVendedoresEnSelect() {
   const select = document.getElementById('vendedorProducto');
   if (!select) {
@@ -72,7 +129,7 @@ async function cargarVendedoresEnSelect() {
   });
 }
 
-// 4. Función para agregar producto
+// 6. Función para agregar producto
 async function agregarProducto({ producto, precio, vendedor_id }) {
   const { data, error } = await supabase
     .from('producto')
@@ -94,7 +151,7 @@ async function agregarProducto({ producto, precio, vendedor_id }) {
   }
 }
 
-// 5. Listeners del DOM
+// 7. Listeners del DOM
 document.addEventListener('DOMContentLoaded', () => {
   cargarVendedoresEnSelect();
 
@@ -121,6 +178,24 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarProducto({ producto, precio, vendedor_id });
   });
 });
+
+// Listener del formulario de eliminación
+document.addEventListener('DOMContentLoaded', () => {
+  cargarVendedoresParaEliminar();
+
+  document.getElementById('formEliminarVendedor').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const vendedor_id = document.getElementById('vendedorEliminar').value;
+
+    if (!vendedor_id) {
+      alert('Selecciona un vendedor válido');
+      return;
+    }
+
+    eliminarVendedor(vendedor_id);
+  });
+});
+
 
 
 

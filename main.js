@@ -8,7 +8,65 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
   }
 });
 
-// 2. Función para agregar vendedor
+// Mostrar productos de un vendedor seleccionado
+async function mostrarProductosDeVendedor(vendedor_id) {
+  const contenedor = document.getElementById('listaProductos');
+  contenedor.innerHTML = '';
+
+  const { data, error } = await supabase
+    .from('producto')
+    .select('producto, precio')
+    .eq('vendedor_id', vendedor_id);
+
+  if (error) {
+    console.error('Error al cargar productos:', error);
+    contenedor.innerHTML = '<p>Error al cargar productos.</p>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    contenedor.innerHTML = '<p>Este vendedor no tiene productos.</p>';
+    return;
+  }
+
+  const lista = document.createElement('ul');
+  data.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = `${item.producto} — $${item.precio}`;
+    lista.appendChild(li);
+  });
+  contenedor.appendChild(lista);
+}
+
+// Agregar producto (con reemplazo si ya existe)
+async function agregarProducto({ producto, precio, vendedor_id }) {
+// Borrar producto existente con el mismo nombre para ese vendedor
+  const { error: errorDelete } = await supabase
+    .from('producto')
+    .delete()
+    .eq('vendedor_id', vendedor_id)
+    .eq('producto', producto);
+
+  if (errorDelete) {
+    console.error('Error al borrar producto existente:', errorDelete);
+  }
+
+  // Insertar el nuevo producto
+  const { data, error } = await supabase
+    .from('producto')
+    .insert([{ producto, precio, vendedor_id, created_at: new Date().toISOString() }]);
+
+  if (error) {
+    console.error('Error al agregar producto:', error);
+    alert('Error al agregar producto');
+  } else {
+    console.log('Producto agregado:', data);
+    alert('Producto agregado correctamente');
+    mostrarProductosDeVendedor(vendedor_id); // refresca la lista en pantalla
+  }
+}
+
+// Agregar vendedor
 async function agregarVendedor({ nombre, contacto, zona }) {
   const { data, error } = await supabase
     .from('vendedor')
@@ -20,12 +78,12 @@ async function agregarVendedor({ nombre, contacto, zona }) {
   } else {
     console.log('Vendedor agregado:', data);
     alert('Vendedor agregado correctamente');
-    cargarVendedoresEnSelect();     // recarga el desplegable de productos
-    cargarVendedoresParaEliminar(); // recarga el desplegable de eliminación
+    cargarVendedoresEnSelect();
+    cargarVendedoresParaEliminar();
   }
 }
 
-// 3. Función para cargar vendedores en el desplegable de eliminación
+// Cargar vendedores en el desplegable de eliminación
 async function cargarVendedoresParaEliminar() {
   const select = document.getElementById('vendedorEliminar');
   if (!select) return;
@@ -53,21 +111,26 @@ async function cargarVendedoresParaEliminar() {
   });
 }
 
-// 4. Función para eliminar vendedor
+// Eliminar vendedor (y sus productos)
 async function eliminarVendedor(vendedor_id) {
+  // primero borrar productos asociados
+  await supabase.from('producto').delete().eq('vendedor_id', vendedor_id);
+
+  // luego borrar vendedor
   const { error } = await supabase.from('vendedor').delete().eq('id', vendedor_id);
 
   if (error) {
     console.error('Error al eliminar vendedor:', error);
     alert('Error al eliminar vendedor');
   } else {
-    alert('Vendedor eliminado correctamente');
+    alert('Vendedor y productos eliminados correctamente');
     cargarVendedoresParaEliminar();
     cargarVendedoresEnSelect();
+    document.getElementById('listaProductos').innerHTML = '';
   }
 }
 
-// 5. Función para cargar vendedores en el desplegable de productos
+// Cargar vendedores en el desplegable de productos
 async function cargarVendedoresEnSelect() {
   const select = document.getElementById('vendedorProducto');
   if (!select) return;
@@ -95,26 +158,20 @@ async function cargarVendedoresEnSelect() {
   });
 }
 
-// 6. Función para agregar producto
-async function agregarProducto({ producto, precio, vendedor_id }) {
-  const { data, error } = await supabase
-    .from('producto')
-    .insert([{ producto, precio, vendedor_id, created_at: new Date().toISOString() }]);
-
-  if (error) {
-    console.error('Error al agregar producto:', error);
-    alert('Error al agregar producto');
-  } else {
-    console.log('Producto agregado:', data);
-    alert('Producto agregado correctamente');
-  }
-}
-
-// 7. Listeners del DOM (todo en un solo bloque)
+// Listeners del DOM
 document.addEventListener('DOMContentLoaded', () => {
-  // Cargar listas al inicio
   cargarVendedoresEnSelect();
   cargarVendedoresParaEliminar();
+
+  // Mostrar productos al seleccionar un vendedor
+  document.getElementById('vendedorProducto').addEventListener('change', function () {
+    const vendedor_id = this.value;
+    if (vendedor_id) {
+      mostrarProductosDeVendedor(vendedor_id);
+    } else {
+      document.getElementById('listaProductos').innerHTML = '';
+    }
+  });
 
   // Formulario de agregar vendedor
   document.getElementById('formVendedor').addEventListener('submit', e => {

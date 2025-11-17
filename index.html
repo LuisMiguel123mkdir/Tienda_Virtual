@@ -22,7 +22,25 @@
 
   <!-- Contenido principal -->
   <main>
-    <p>Bienvenido a la página principal. Aquí irá el contenido público.</p>
+    
+    <h2>Lista de Productos</h2>
+
+<!-- Selector de ordenamiento -->
+<label for="ordenarPor">Ordenar por:</label>
+<select id="ordenarPor">
+  <option value="producto-asc">Producto A-Z</option>
+  <option value="producto-desc">Producto Z-A</option>
+  <option value="precio-asc">Precio Menor-Mayor</option>
+  <option value="precio-desc">Precio Mayor-Menor</option>
+  <option value="vendedor-asc">Proveedor A-Z</option>
+  <option value="vendedor-desc">Proveedor Z-A</option>
+  <option value="localidad-asc">Localidad A-Z</option>
+  <option value="localidad-desc">Localidad Z-A</option>
+</select>
+
+<!-- Contenedor de la lista -->
+<div id="listaProductos"></div>
+
   </main>
 
   <script>
@@ -34,6 +52,7 @@
   </script>
 </body>
 </html>
+
 
 
 

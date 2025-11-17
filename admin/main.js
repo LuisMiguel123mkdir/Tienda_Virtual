@@ -80,9 +80,18 @@ async function mostrarProductosDeVendedor(vendedor_id) {
   const contenedor = document.getElementById('listaProductos');
   contenedor.innerHTML = '';
 
+  // Traemos productos y la relación con vendedor (nombre y zona)
   const { data, error } = await supabaseClient
     .from('producto')
-    .select('producto, precio, cantidad, localidad')
+    .select(`
+      producto,
+      precio,
+      cantidad,
+      vendedor: vendedor_id (
+        nombre,
+        zona
+      )
+    `)
     .eq('vendedor_id', vendedor_id);
 
   if (error) {
@@ -99,7 +108,7 @@ async function mostrarProductosDeVendedor(vendedor_id) {
   const lista = document.createElement('ul');
   data.forEach(item => {
     const li = document.createElement('li');
-    li.textContent = `${item.producto} — $${item.precio} — Cantidad: ${item.cantidad} — Localidad: ${item.localidad}`;
+    li.textContent = `${item.producto} — $${item.precio} — Cantidad: ${item.cantidad} — Proveedor: ${item.vendedor?.nombre || "N/A"} — Localidad: ${item.vendedor?.zona || "N/A"}`;
     lista.appendChild(li);
   });
   contenedor.appendChild(lista);
@@ -114,7 +123,7 @@ async function agregarProducto({ producto, precio, cantidad, vendedor_id }) {
     .eq('vendedor_id', vendedor_id)
     .eq('producto', producto);
 
-  // Insertar el nuevo producto
+  // Insertar el nuevo producto (sin localidad, porque viene del vendedor)
   const { data, error } = await supabaseClient
     .from('producto')
     .insert([{
@@ -133,7 +142,6 @@ async function agregarProducto({ producto, precio, cantidad, vendedor_id }) {
     mostrarProductosDeVendedor(vendedor_id);
   }
 }
-
 
 // ------------------- VENDEDORES -------------------
 
@@ -359,4 +367,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
 

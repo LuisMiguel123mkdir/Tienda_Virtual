@@ -216,52 +216,136 @@ async function cargarVendedoresEnSelect() {
 // ------------------- LISTENERS -------------------
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Cargar datos iniciales
   cargarAdmins();
   cargarVendedoresEnSelect();
   cargarVendedoresParaEliminar();
 
-  document.getElementById('vendedorProducto')?.addEventListener('change', function () {
-    const vendedor_id = this.value;
-    const contenedor = document.getElementById('listaProductos');
-    if (!vendedor_id) {
-      if (contenedor) contenedor.innerHTML = '';
-      return;
-    }
-    mostrarProductosDeVendedor(vendedor_id);
-  });
+  // Mostrar productos al seleccionar un vendedor
+  const selectVendedorProducto = document.getElementById('vendedorProducto');
+  if (selectVendedorProducto) {
+    selectVendedorProducto.addEventListener('change', function () {
+      const vendedor_id = this.value;
+      const contenedor = document.getElementById('listaProductos');
+      if (!vendedor_id) {
+        if (contenedor) contenedor.innerHTML = '';
+        return;
+      }
+      mostrarProductosDeVendedor(vendedor_id);
+    });
+  }
 
-  document.getElementById('formVendedor')?.addEventListener('submit', e => {
-    e.preventDefault();
-    const nombre = document.getElementById('nombreVendedor')?.value?.trim();
-    const contacto = document.getElementById('contactoVendedor')?.value?.trim();
-    const zona = document.getElementById('zonaVendedor')?.value?.trim();
-    agregarVendedor({ nombre, contacto, zona });
-  });
+  // Formulario: agregar vendedor
+  const formVendedor = document.getElementById('formVendedor');
+  if (formVendedor) {
+    formVendedor.addEventListener('submit', e => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombreVendedor')?.value?.trim();
+      const contacto = document.getElementById('contactoVendedor')?.value?.trim();
+      const zona = document.getElementById('zonaVendedor')?.value?.trim();
 
-  document.getElementById('formProducto')?.addEventListener('submit', e => {
-    e.preventDefault();
-    const producto = document.getElementById('nombreProducto')?.value?.trim();
-    const precio = parseFloat(document.getElementById('precioProducto')?.value);
-    const cantidad = parseInt(document.getElementById('cantidadProducto')?.value, 10);
-    const vendedor_id = document.getElementById('vendedorProducto')?.value;
+      if (!nombre || !contacto || !zona) {
+        alert('Completa nombre, contacto y zona.');
+        return;
+      }
+      agregarVendedor({ nombre, contacto, zona });
+      formVendedor.reset();
+    });
+  }
 
-    if (!producto || isNaN(precio) || isNaN(cantidad) || !vendedor_id) {
-      alert('Completa producto, precio, cantidad y vendedor.');
-      return;
-    }
+  // Formulario: agregar producto
+  const formProducto = document.getElementById('formProducto');
+  if (formProducto) {
+    formProducto.addEventListener('submit', e => {
+      e.preventDefault();
+      const producto = document.getElementById('nombreProducto')?.value?.trim();
+      const precio = parseFloat(document.getElementById('precioProducto')?.value);
+      const cantidad = parseInt(document.getElementById('cantidadProducto')?.value, 10);
+      const vendedor_id = document.getElementById('vendedorProducto')?.value;
 
-    agregarProducto({ producto, precio, cantidad, vendedor_id });
-    document.getElementById('formProducto').reset();
-  });
+      if (!producto || isNaN(precio) || isNaN(cantidad) || !vendedor_id) {
+        alert('Completa producto, precio, cantidad y vendedor.');
+        return;
+      }
 
-  document.getElementById('formEliminarVendedor')?.addEventListener('submit', e => {
-    e.preventDefault();
-    const vendedor_id = document.getElementById('vendedorEliminar')?.value;
-    eliminarVendedor(vendedor_id);
-  });
+      agregarProducto({ producto, precio, cantidad, vendedor_id });
+      formProducto.reset();
+    });
+  }
 
-  document.getElementById('formAdmin')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const nombre = document.getElementById('nombreAdmin')?.value?.trim();
-    const contrasena = document.getElementById('contrasenaAdmin')?.value?.trim();
+  // Formulario: eliminar vendedor
+  const formEliminarVendedor = document.getElementById('formEliminarVendedor');
+  if (formEliminarVendedor) {
+    formEliminarVendedor.addEventListener('submit', e => {
+      e.preventDefault();
+      const vendedor_id = document.getElementById('vendedorEliminar')?.value;
+      if (!vendedor_id) {
+        alert('Selecciona un vendedor válido.');
+        return;
+      }
+      eliminarVendedor(vendedor_id);
+    });
+  }
 
+  // Formulario: crear/actualizar administrador
+  const formAdmin = document.getElementById('formAdmin');
+  if (formAdmin) {
+    formAdmin.addEventListener('submit', async e => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombreAdmin')?.value?.trim();
+      const contrasena = document.getElementById('contrasenaAdmin')?.value?.trim();
+      const mensaje = document.getElementById('mensajeAdmin');
+
+      if (!nombre || !contrasena) {
+        if (mensaje) mensaje.textContent = 'Nombre y contraseña son obligatorios.';
+        return;
+      }
+
+      const { data: existente, error: qErr } = await supabaseClient
+        .from('administrador')
+        .select('id')
+        .eq('nombre', nombre)
+        .maybeSingle();
+
+      if (qErr) {
+        if (mensaje) mensaje.textContent = 'Error al verificar el administrador.';
+        return;
+      }
+
+      if (existente) {
+        const { error } = await supabaseClient
+          .from('administrador')
+          .update({ contrasena })
+          .eq('id', existente.id);
+        if (mensaje) mensaje.textContent = error ? 'Error al modificar.' : 'Contraseña actualizada.';
+      } else {
+        const { error } = await supabaseClient
+          .from('administrador')
+          .insert([{ nombre, contrasena }]);
+        if (mensaje) mensaje.textContent = error ? 'Error al agregar.' : 'Administrador agregado.';
+      }
+
+      cargarAdmins();
+      formAdmin.reset();
+    });
+  }
+
+  // Formulario: eliminar administrador
+  const formEliminarAdmin = document.getElementById('formEliminarAdmin');
+  if (formEliminarAdmin) {
+    formEliminarAdmin.addEventListener('submit', async e => {
+      e.preventDefault();
+      const id = document.getElementById('adminEliminar')?.value;
+      const mensaje = document.getElementById('mensajeEliminar');
+
+      if (!id) {
+        if (mensaje) mensaje.textContent = 'Selecciona un administrador.';
+        return;
+      }
+
+      const { error } = await supabaseClient.from('administrador').delete().eq('id', id);
+      if (mensaje) mensaje.textContent = error ? 'Error al eliminar.' : 'Administrador eliminado.';
+      cargarAdmins();
+    });
+  }
+});

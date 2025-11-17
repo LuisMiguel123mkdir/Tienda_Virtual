@@ -3,17 +3,16 @@
 const { createClient } = supabase;
 const supabaseUrl = 'https://wnwlqvhqnumualecxnuh.supabase.co'; 
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indud2xxdmhxbnVtdWFsZWN4bnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwNDM0NTcsImV4cCI6MjA3ODYxOTQ1N30.-fPjOVaAGvVGfCUSVMtu9yLuxxJL02oMQ-qtxpP8CtE'; 
-const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    persistSession: false
-  }
+const supabaseClient = createClient(supabaseUrl, supabaseKey, {
+  auth: { persistSession: false }
 });
 
-let productosGlobal = []; // almacenará todos los productos
 
-// Función para cargar productos con vendedor y localidad
+let productosGlobal = [];
+
+// Cargar productos
 async function cargarProductos() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('producto')
     .select(`
       producto,
@@ -35,7 +34,7 @@ async function cargarProductos() {
   mostrarProductos(productosGlobal);
 }
 
-// Función para mostrar productos en pantalla
+// Mostrar productos
 function mostrarProductos(lista) {
   const contenedor = document.getElementById('listaProductos');
   contenedor.innerHTML = "";
@@ -71,7 +70,7 @@ function mostrarProductos(lista) {
   contenedor.appendChild(tabla);
 }
 
-// Función para ordenar productos según selección
+// Ordenar productos
 function ordenarProductos() {
   const criterio = document.getElementById('ordenarPor').value;
   let listaOrdenada = [...productosGlobal];
@@ -106,8 +105,8 @@ function ordenarProductos() {
   mostrarProductos(listaOrdenada);
 }
 
-// Inicializar al cargar la página
+// Inicializar
 document.addEventListener('DOMContentLoaded', () => {
-  cargarProductos(); // carga inicial
+  cargarProductos();
   document.getElementById('ordenarPor').addEventListener('change', ordenarProductos);
 });

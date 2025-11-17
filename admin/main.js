@@ -105,8 +105,8 @@ async function mostrarProductosDeVendedor(vendedor_id) {
 }
 
 // Agregar producto (con reemplazo si ya existe)
-async function agregarProducto({ producto, precio, vendedor_id }) {
-// Borrar producto existente con el mismo nombre para ese vendedor
+async function agregarProducto({ producto, precio, cantidad, vendedor_id, localidad }) {
+  // Borrar producto existente con el mismo nombre para ese vendedor
   const { error: errorDelete } = await supabase
     .from('producto')
     .delete()
@@ -120,7 +120,14 @@ async function agregarProducto({ producto, precio, vendedor_id }) {
   // Insertar el nuevo producto
   const { data, error } = await supabase
     .from('producto')
-    .insert([{ producto, precio, vendedor_id, created_at: new Date().toISOString() }]);
+    .insert([{
+      producto,
+      precio,
+      cantidad,         // 👈 nuevo campo
+      vendedor_id,
+      localidad,        // 👈 nuevo campo
+      created_at: new Date().toISOString()
+    }]);
 
   if (error) {
     console.error('Error al agregar producto:', error);
@@ -274,5 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
     eliminarVendedor(vendedor_id);
   });
 });
+
 
 

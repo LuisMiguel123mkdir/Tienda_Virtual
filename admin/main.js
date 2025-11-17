@@ -106,12 +106,15 @@ async function mostrarProductosDeVendedor(vendedor_id) {
 }
 
 // Agregar producto (con reemplazo si ya existe)
-async function agregarProducto({ producto, precio, cantidad, vendedor_id, localidad }) {
-  await supabaseClient.from('producto')
+async function agregarProducto({ producto, precio, cantidad, vendedor_id }) {
+  // Borrar producto existente con el mismo nombre para ese vendedor
+  await supabaseClient
+    .from('producto')
     .delete()
     .eq('vendedor_id', vendedor_id)
     .eq('producto', producto);
 
+  // Insertar el nuevo producto
   const { data, error } = await supabaseClient
     .from('producto')
     .insert([{
@@ -119,7 +122,6 @@ async function agregarProducto({ producto, precio, cantidad, vendedor_id, locali
       precio,
       cantidad,
       vendedor_id,
-      localidad,
       created_at: new Date().toISOString()
     }]);
 
@@ -131,6 +133,7 @@ async function agregarProducto({ producto, precio, cantidad, vendedor_id, locali
     mostrarProductosDeVendedor(vendedor_id);
   }
 }
+
 
 // ------------------- VENDEDORES -------------------
 
@@ -356,3 +359,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+

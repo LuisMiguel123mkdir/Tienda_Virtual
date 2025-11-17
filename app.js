@@ -25,6 +25,7 @@ async function cargarProductos() {
     return;
   }
 
+  console.log("Productos cargados:", data); // 👀 Verifica en consola
   productosGlobal = data;
   mostrarProductos(productosGlobal);
 }
@@ -100,8 +101,8 @@ function ordenarProductos() {
   mostrarProductos(listaOrdenada);
 }
 
-// Listener para el select de ordenamiento
-document.getElementById('ordenarPor').addEventListener('change', ordenarProductos);
-
-// Inicializar
-cargarProductos();
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+  cargarProductos(); // 👈 carga inicial
+  document.getElementById('ordenarPor').addEventListener('change', ordenarProductos);
+});

@@ -12,17 +12,36 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
 
 // Cargar lista de admins en el select
 async function cargarAdmins() {
-  const { data, error } = await supabaseClient.from('administrador').select('id, nombre');
-  if (!error && data) {
-    const select = document.getElementById('adminEliminar');
-    select.innerHTML = "";
-    data.forEach(admin => {
-      const option = document.createElement('option');
-      option.value = admin.id;
-      option.textContent = admin.nombre;
-      select.appendChild(option);
-    });
+  const { data, error } = await supabaseClient
+    .from('administrador')
+    .select('id, nombre');
+
+  const select = document.getElementById('adminEliminar');
+  select.innerHTML = "";
+
+  if (error) {
+    console.error("Error al cargar admins:", error);
+    select.innerHTML = "<option value=''>Error al cargar</option>";
+    return;
   }
+
+  if (!data || data.length === 0) {
+    select.innerHTML = "<option value=''>No hay administradores</option>";
+    return;
+  }
+
+  // Opción inicial
+  const defaultOption = document.createElement('option');
+  defaultOption.value = "";
+  defaultOption.textContent = "Selecciona un administrador";
+  select.appendChild(defaultOption);
+
+  data.forEach(admin => {
+    const option = document.createElement('option');
+    option.value = admin.id;
+    option.textContent = admin.nombre;
+    select.appendChild(option);
+  });
 }
 
 // Guardar o modificar admin
@@ -30,18 +49,24 @@ document.getElementById('formAdmin').addEventListener('submit', async (e) => {
   e.preventDefault();
   const nombre = document.getElementById('nombreAdmin').value.trim();
   const contrasena = document.getElementById('contrasenaAdmin').value.trim();
+  const mensaje = document.getElementById('mensajeAdmin');
 
-  if (contrasena === "") {
-    document.getElementById('mensajeAdmin').textContent = "La contraseña no puede estar en blanco.";
+  if (!nombre || contrasena === "") {
+    mensaje.textContent = "Nombre y contraseña son obligatorios.";
     return;
   }
 
   // Verificar si ya existe
-  const { data: existente } = await supabaseClient
+  const { data: existente, error: qError } = await supabaseClient
     .from('administrador')
     .select('id')
     .eq('nombre', nombre)
     .maybeSingle();
+
+  if (qError) {
+    mensaje.textContent = "Error al verificar administrador.";
+    return;
+  }
 
   if (existente) {
     // Actualizar contraseña
@@ -50,27 +75,38 @@ document.getElementById('formAdmin').addEventListener('submit', async (e) => {
       .update({ contrasena })
       .eq('id', existente.id);
 
-    document.getElementById('mensajeAdmin').textContent = error ? "Error al modificar." : "Contraseña actualizada.";
+    mensaje.textContent = error ? "Error al modificar." : "Contraseña actualizada.";
   } else {
     // Insertar nuevo admin
     const { error } = await supabaseClient
       .from('administrador')
       .insert([{ nombre, contrasena }]);
 
-    document.getElementById('mensajeAdmin').textContent = error ? "Error al agregar." : "Administrador agregado.";
+    mensaje.textContent = error ? "Error al agregar." : "Administrador agregado.";
   }
 
+  // Refrescar lista y limpiar formulario
   cargarAdmins();
+  document.getElementById('formAdmin').reset();
 });
 
 // Eliminar admin
 document.getElementById('formEliminarAdmin').addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('adminEliminar').value;
+  const mensaje = document.getElementById('mensajeEliminar');
 
-  const { error } = await supabaseClient.from('administrador').delete().eq('id', id);
+  if (!id) {
+    mensaje.textContent = "Selecciona un administrador válido.";
+    return;
+  }
 
-  document.getElementById('mensajeEliminar').textContent = error ? "Error al eliminar." : "Administrador eliminado.";
+  const { error } = await supabaseClient
+    .from('administrador')
+    .delete()
+    .eq('id', id);
+
+  mensaje.textContent = error ? "Error al eliminar." : "Administrador eliminado.";
   cargarAdmins();
 });
 
@@ -107,8 +143,9 @@ async function mostrarProductosDeVendedor(vendedor_id) {
 
   const lista = document.createElement('ul');
   data.forEach(item => {
+    const precioFormateado = Number(item.precio).toFixed(2);
     const li = document.createElement('li');
-    li.textContent = `${item.producto} — $${item.precio} — Cantidad: ${item.cantidad} — Proveedor: ${item.vendedor?.nombre || "N/A"} — Localidad: ${item.vendedor?.zona || "N/A"}`;
+    li.textContent = `${item.producto} — $${precioFormateado} — Cantidad: ${item.cantidad} — Proveedor: ${item.vendedor?.nombre || "N/A"} — Localidad: ${item.vendedor?.zona || "N/A"}`;
     lista.appendChild(li);
   });
   contenedor.appendChild(lista);
@@ -117,11 +154,15 @@ async function mostrarProductosDeVendedor(vendedor_id) {
 // Agregar producto (con reemplazo si ya existe)
 async function agregarProducto({ producto, precio, cantidad, vendedor_id }) {
   // Borrar producto existente con el mismo nombre para ese vendedor
-  await supabaseClient
+  const { error: errorDelete } = await supabaseClient
     .from('producto')
     .delete()
     .eq('vendedor_id', vendedor_id)
     .eq('producto', producto);
+
+  if (errorDelete) {
+    console.error('Error al borrar producto existente:', errorDelete);
+  }
 
   // Insertar el nuevo producto (sin localidad, porque viene del vendedor)
   const { data, error } = await supabaseClient
@@ -146,6 +187,11 @@ async function agregarProducto({ producto, precio, cantidad, vendedor_id }) {
 // ------------------- VENDEDORES -------------------
 
 async function agregarVendedor({ nombre, contacto, zona }) {
+  if (!nombre || !contacto || !zona) {
+    alert('Completa nombre, contacto y zona.');
+    return;
+  }
+
   const { error } = await supabaseClient
     .from('vendedor')
     .insert([{ nombre, contacto, zona, created_at: new Date().toISOString() }]);
@@ -157,6 +203,7 @@ async function agregarVendedor({ nombre, contacto, zona }) {
     alert('Vendedor agregado correctamente');
     cargarVendedoresEnSelect();
     cargarVendedoresParaEliminar();
+    document.getElementById('formVendedor').reset();
   }
 }
 
@@ -188,7 +235,20 @@ async function cargarVendedoresParaEliminar() {
 }
 
 async function eliminarVendedor(vendedor_id) {
-  await supabaseClient.from('producto').delete().eq('vendedor_id', vendedor_id);
+  if (!vendedor_id) {
+    alert('Selecciona un vendedor válido.');
+    return;
+  }
+
+  const { error: errorProductos } = await supabaseClient
+    .from('producto')
+    .delete()
+    .eq('vendedor_id', vendedor_id);
+
+  if (errorProductos) {
+    console.error('Error al borrar productos del vendedor:', errorProductos);
+  }
+
   const { error } = await supabaseClient.from('vendedor').delete().eq('id', vendedor_id);
 
   if (error) {
@@ -268,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Formulario: agregar producto (con cantidad y localidad)
+  // Formulario: agregar producto (solo producto, precio, cantidad y vendedor)
   const formProducto = document.getElementById('formProducto');
   if (formProducto) {
     formProducto.addEventListener('submit', e => {
@@ -276,18 +336,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const producto = document.getElementById('nombreProducto')?.value?.trim();
       const precioStr = document.getElementById('precioProducto')?.value;
       const cantidadStr = document.getElementById('cantidadProducto')?.value;
-      const localidad = document.getElementById('localidadProducto')?.value?.trim();
       const vendedor_id = document.getElementById('vendedorProducto')?.value;
 
       const precio = parseFloat(precioStr);
       const cantidad = parseInt(cantidadStr, 10);
 
-      if (!producto || isNaN(precio) || isNaN(cantidad) || !localidad || !vendedor_id) {
-        alert('Completa producto, precio, cantidad, localidad y vendedor.');
+      if (!producto || isNaN(precio) || isNaN(cantidad) || !vendedor_id) {
+        alert('Completa producto, precio, cantidad y vendedor.');
         return;
       }
 
-      agregarProducto({ producto, precio, cantidad, vendedor_id, localidad });
+      agregarProducto({ producto, precio, cantidad, vendedor_id });
+      formProducto.reset();
     });
   }
 
@@ -319,7 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Reutiliza la lógica existente de guardar/modificar admin
       const { data: existente, error: qErr } = await supabaseClient
         .from('administrador')
         .select('id')
@@ -345,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       cargarAdmins();
+      formAdmin.reset();
     });
   }
 
@@ -367,5 +427,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
-

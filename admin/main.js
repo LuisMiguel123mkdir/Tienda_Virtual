@@ -3,19 +3,14 @@
 const supabaseUrl = 'https://wnwlqvhqnumualecxnuh.supabase.co'; 
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indud2xxdmhxbnVtdWFsZWN4bnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwNDM0NTcsImV4cCI6MjA3ODYxOTQ1N30.-fPjOVaAGvVGfCUSVMtu9yLuxxJL02oMQ-qtxpP8CtE'; 
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    persistSession: false
-  }
+  auth: { persistSession: false }
 });
 
 // ------------------- ADMINS -------------------
 
 // Cargar lista de admins en el select
 async function cargarAdmins() {
-  const { data, error } = await supabaseClient
-    .from('administrador')
-    .select('id, nombre');
-
+  const { data, error } = await supabaseClient.from('administrador').select('id, nombre');
   const select = document.getElementById('adminEliminar');
   select.innerHTML = "";
 
@@ -30,7 +25,6 @@ async function cargarAdmins() {
     return;
   }
 
-  // Opción inicial
   const defaultOption = document.createElement('option');
   defaultOption.value = "";
   defaultOption.textContent = "Selecciona un administrador";
@@ -44,79 +38,12 @@ async function cargarAdmins() {
   });
 }
 
-// Guardar o modificar admin
-document.getElementById('formAdmin').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const nombre = document.getElementById('nombreAdmin').value.trim();
-  const contrasena = document.getElementById('contrasenaAdmin').value.trim();
-  const mensaje = document.getElementById('mensajeAdmin');
-
-  if (!nombre || contrasena === "") {
-    mensaje.textContent = "Nombre y contraseña son obligatorios.";
-    return;
-  }
-
-  // Verificar si ya existe
-  const { data: existente, error: qError } = await supabaseClient
-    .from('administrador')
-    .select('id')
-    .eq('nombre', nombre)
-    .maybeSingle();
-
-  if (qError) {
-    mensaje.textContent = "Error al verificar administrador.";
-    return;
-  }
-
-  if (existente) {
-    // Actualizar contraseña
-    const { error } = await supabaseClient
-      .from('administrador')
-      .update({ contrasena })
-      .eq('id', existente.id);
-
-    mensaje.textContent = error ? "Error al modificar." : "Contraseña actualizada.";
-  } else {
-    // Insertar nuevo admin
-    const { error } = await supabaseClient
-      .from('administrador')
-      .insert([{ nombre, contrasena }]);
-
-    mensaje.textContent = error ? "Error al agregar." : "Administrador agregado.";
-  }
-
-  // Refrescar lista y limpiar formulario
-  cargarAdmins();
-  document.getElementById('formAdmin').reset();
-});
-
-// Eliminar admin
-document.getElementById('formEliminarAdmin').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const id = document.getElementById('adminEliminar').value;
-  const mensaje = document.getElementById('mensajeEliminar');
-
-  if (!id) {
-    mensaje.textContent = "Selecciona un administrador válido.";
-    return;
-  }
-
-  const { error } = await supabaseClient
-    .from('administrador')
-    .delete()
-    .eq('id', id);
-
-  mensaje.textContent = error ? "Error al eliminar." : "Administrador eliminado.";
-  cargarAdmins();
-});
-
 // ------------------- PRODUCTOS -------------------
 
 async function mostrarProductosDeVendedor(vendedor_id) {
   const contenedor = document.getElementById('listaProductos');
   contenedor.innerHTML = '';
 
-  // Traemos productos y la relación con vendedor (nombre y zona)
   const { data, error } = await supabaseClient
     .from('producto')
     .select(`
@@ -151,9 +78,7 @@ async function mostrarProductosDeVendedor(vendedor_id) {
   contenedor.appendChild(lista);
 }
 
-// Agregar producto (con reemplazo si ya existe)
 async function agregarProducto({ producto, precio, cantidad, vendedor_id }) {
-  // Borrar producto existente con el mismo nombre para ese vendedor
   const { error: errorDelete } = await supabaseClient
     .from('producto')
     .delete()
@@ -164,8 +89,7 @@ async function agregarProducto({ producto, precio, cantidad, vendedor_id }) {
     console.error('Error al borrar producto existente:', errorDelete);
   }
 
-  // Insertar el nuevo producto (sin localidad, porque viene del vendedor)
-  const { data, error } = await supabaseClient
+  const { error } = await supabaseClient
     .from('producto')
     .insert([{
       producto,
@@ -292,138 +216,51 @@ async function cargarVendedoresEnSelect() {
 // ------------------- LISTENERS -------------------
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Cargar datos iniciales
   cargarAdmins();
   cargarVendedoresEnSelect();
   cargarVendedoresParaEliminar();
 
-  // Mostrar productos al seleccionar un vendedor en el formulario de productos
-  const selectVendedorProducto = document.getElementById('vendedorProducto');
-  if (selectVendedorProducto) {
-    selectVendedorProducto.addEventListener('change', function () {
-      const vendedor_id = this.value;
-      const contenedor = document.getElementById('listaProductos');
-      if (!vendedor_id) {
-        if (contenedor) contenedor.innerHTML = '';
-        return;
-      }
-      mostrarProductosDeVendedor(vendedor_id);
-    });
-  }
+  document.getElementById('vendedorProducto')?.addEventListener('change', function () {
+    const vendedor_id = this.value;
+    const contenedor = document.getElementById('listaProductos');
+    if (!vendedor_id) {
+      if (contenedor) contenedor.innerHTML = '';
+      return;
+    }
+    mostrarProductosDeVendedor(vendedor_id);
+  });
 
-  // Formulario: agregar vendedor
-  const formVendedor = document.getElementById('formVendedor');
-  if (formVendedor) {
-    formVendedor.addEventListener('submit', e => {
-      e.preventDefault();
-      const nombre = document.getElementById('nombreVendedor')?.value?.trim();
-      const contacto = document.getElementById('contactoVendedor')?.value?.trim();
-      const zona = document.getElementById('zonaVendedor')?.value?.trim();
+  document.getElementById('formVendedor')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const nombre = document.getElementById('nombreVendedor')?.value?.trim();
+    const contacto = document.getElementById('contactoVendedor')?.value?.trim();
+    const zona = document.getElementById('zonaVendedor')?.value?.trim();
+    agregarVendedor({ nombre, contacto, zona });
+  });
 
-      if (!nombre || !contacto || !zona) {
-        alert('Completa nombre, contacto y zona.');
-        return;
-      }
-      agregarVendedor({ nombre, contacto, zona });
-    });
-  }
+  document.getElementById('formProducto')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const producto = document.getElementById('nombreProducto')?.value?.trim();
+    const precio = parseFloat(document.getElementById('precioProducto')?.value);
+    const cantidad = parseInt(document.getElementById('cantidadProducto')?.value, 10);
+    const vendedor_id = document.getElementById('vendedorProducto')?.value;
 
-  // Formulario: agregar producto (solo producto, precio, cantidad y vendedor)
-  const formProducto = document.getElementById('formProducto');
-  if (formProducto) {
-    formProducto.addEventListener('submit', e => {
-      e.preventDefault();
-      const producto = document.getElementById('nombreProducto')?.value?.trim();
-      const precioStr = document.getElementById('precioProducto')?.value;
-      const cantidadStr = document.getElementById('cantidadProducto')?.value;
-      const vendedor_id = document.getElementById('vendedorProducto')?.value;
+    if (!producto || isNaN(precio) || isNaN(cantidad) || !vendedor_id) {
+      alert('Completa producto, precio, cantidad y vendedor.');
+      return;
+    }
 
-      const precio = parseFloat(precioStr);
-      const cantidad = parseInt(cantidadStr, 10);
+    agregarProducto({ producto, precio, cantidad, vendedor_id });
+    document.getElementById('formProducto').reset();
+  });
 
-      if (!producto || isNaN(precio) || isNaN(cantidad) || !vendedor_id) {
-        alert('Completa producto, precio, cantidad y vendedor.');
-        return;
-      }
+  document.getElementById('formEliminarVendedor')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const vendedor_id = document.getElementById('vendedorEliminar')?.value;
+    eliminarVendedor(vendedor_id);
+  });
 
-      agregarProducto({ producto, precio, cantidad, vendedor_id });
-      formProducto.reset();
-    });
-  }
-
-  // Formulario: eliminar vendedor (y sus productos)
-  const formEliminarVendedor = document.getElementById('formEliminarVendedor');
-  if (formEliminarVendedor) {
-    formEliminarVendedor.addEventListener('submit', e => {
-      e.preventDefault();
-      const vendedor_id = document.getElementById('vendedorEliminar')?.value;
-      if (!vendedor_id) {
-        alert('Selecciona un vendedor válido.');
-        return;
-      }
-      eliminarVendedor(vendedor_id);
-    });
-  }
-
-  // Formulario: crear/actualizar administrador
-  const formAdmin = document.getElementById('formAdmin');
-  if (formAdmin) {
-    formAdmin.addEventListener('submit', async e => {
-      e.preventDefault();
-      const nombre = document.getElementById('nombreAdmin')?.value?.trim();
-      const contrasena = document.getElementById('contrasenaAdmin')?.value?.trim();
-      const mensaje = document.getElementById('mensajeAdmin');
-
-      if (!nombre || !contrasena) {
-        if (mensaje) mensaje.textContent = 'Nombre y contraseña son obligatorios.';
-        return;
-      }
-
-      const { data: existente, error: qErr } = await supabaseClient
-        .from('administrador')
-        .select('id')
-        .eq('nombre', nombre)
-        .maybeSingle();
-
-      if (qErr) {
-        if (mensaje) mensaje.textContent = 'Error al verificar el administrador.';
-        return;
-      }
-
-      if (existente) {
-        const { error } = await supabaseClient
-          .from('administrador')
-          .update({ contrasena })
-          .eq('id', existente.id);
-        if (mensaje) mensaje.textContent = error ? 'Error al modificar.' : 'Contraseña actualizada.';
-      } else {
-        const { error } = await supabaseClient
-          .from('administrador')
-          .insert([{ nombre, contrasena }]);
-        if (mensaje) mensaje.textContent = error ? 'Error al agregar.' : 'Administrador agregado.';
-      }
-
-      cargarAdmins();
-      formAdmin.reset();
-    });
-  }
-
-  // Formulario: eliminar administrador
-  const formEliminarAdmin = document.getElementById('formEliminarAdmin');
-  if (formEliminarAdmin) {
-    formEliminarAdmin.addEventListener('submit', async e => {
-      e.preventDefault();
-      const id = document.getElementById('adminEliminar')?.value;
-      const mensaje = document.getElementById('mensajeEliminar');
-
-      if (!id) {
-        if (mensaje) mensaje.textContent = 'Selecciona un administrador.';
-        return;
-      }
-
-      const { error } = await supabaseClient.from('administrador').delete().eq('id', id);
-      if (mensaje) mensaje.textContent = error ? 'Error al eliminar.' : 'Administrador eliminado.';
-      cargarAdmins();
-    });
-  }
-});
+  document.getElementById('formAdmin')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const nombre = document.getElementById('nombreAdmin')?.value?.trim();
+    const contrasena = document.getElementById('contrasenaAdmin')?.value?.trim();

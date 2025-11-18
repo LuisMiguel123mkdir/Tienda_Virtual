@@ -24,7 +24,7 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
 localStorage.setItem('isAdmin', 'true');
 
 // Redirigir al panel admin
-window.location.href = 'admin/index.html';
+window.location.href = '../admin/index.html';
 
 });
 

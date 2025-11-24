@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Historial</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <nav class="navbar">
+    <div class="navbar-left">
+      <h1>Acceso Historial</h1>
+    </div>
+  </nav>
+
+  <main>
+    <form id="formLogin">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" required>
+
+      <label for="contrasena">Contraseña:</label>
+      <input type="password" id="contrasena" required>
+
+      <button type="submit">Entrar</button>
+    </form>
+    <p id="mensaje"></p>
+  </main>
+
+  <script src="login.js"></script>
+</body>
+</html>

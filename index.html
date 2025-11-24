@@ -51,46 +51,7 @@
   </main>
 
   <script src="app.js"></script>
-  
-  <script>
-    function irASeccion(url) {
-      if (url) {
-        window.location.href = url;
-      }
-    }
-
-    // ✅ Estilos dinámicos para el modal
-    const style = document.createElement('style');
-    style.textContent = `
-      #modalCompra {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #f9f9f9;
-        border: 2px solid #ccc;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        z-index: 1000;
-        width: 300px;
-        text-align: center;
-      }
-      #modalCompra h3 {
-        margin-top: 0;
-      }
-      #modalCompra input {
-        width: 80%;
-        padding: 8px;
-        margin: 10px 0;
-      }
-      #modalCompra button {
-        margin: 5px;
-        padding: 8px 12px;
-        cursor: pointer;
-      }
-    `;
-    document.head.appendChild(style);
   </script>
 </body>
 </html>
+

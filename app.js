@@ -60,6 +60,37 @@ async function comprarProducto(producto) {
     }
   }
 
+  // 👉 Aquí van tus tres líneas finales
+  alert("Compra realizada con éxito");
+  cerrarModal();
+  cargarProductos(); // refrescar lista
+}
+
+  // 2. Actualizar stock
+  const nuevoStock = producto.cantidad - cantidad;
+  if (nuevoStock > 0) {
+    const { error } = await supabaseClient
+      .from('producto')
+      .update({ cantidad: nuevoStock })
+      .eq('id', producto.id);
+    if (error) {
+      console.error("Error al actualizar stock:", error);
+      alert("Error al actualizar stock");
+      return;
+    }
+  } else {
+    // 3. Eliminar producto si stock llega a 0
+    const { error } = await supabaseClient
+      .from('producto')
+      .delete()
+      .eq('id', producto.id);
+    if (error) {
+      console.error("Error al eliminar producto:", error);
+      alert("Error al eliminar producto");
+      return;
+    }
+  }
+
   alert("Compra realizada con éxito");
   cerrarModal();
   mostrarProductosDeVendedor(producto.vendedor_id); // refrescar lista
@@ -67,17 +98,18 @@ async function comprarProducto(producto) {
 
 // Cargar productos
 async function cargarProductos() {
-  const { data, error } = await supabaseClient
-    .from('producto')
-    .select(`
-      producto,
-      precio,
-      cantidad,
-      vendedor: vendedor_id (
-        nombre,
-        zona
-      )
-    `);
+const { data, error } = await supabaseClient
+  .from('producto')
+  .select(`
+    id,
+    producto,
+    precio,
+    cantidad,
+    vendedor: vendedor_id (
+      nombre,
+      zona
+    )
+  `);
 
   if (error) {
     console.error("Error al cargar productos:", error);

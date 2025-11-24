@@ -18,7 +18,6 @@
       <select id="menuOpciones" onchange="irASeccion(this.value)">
         <option value="">Menú</option>
         <option value="admin/index.html">Administrador</option>
-        <!-- En el futuro puedes añadir más opciones aquí -->
       </select>
     </div>
   </nav>
@@ -27,29 +26,28 @@
   <main>
     <h2>Lista de Productos</h2>
 
-<label for="ordenarPor">Ordenar por:</label>
-<select id="ordenarPor">
-  <option value="producto-asc">Producto A-Z</option>
-  <option value="producto-desc">Producto Z-A</option>
-  <option value="precio-asc">Precio Menor-Mayor</option>
-  <option value="precio-desc">Precio Mayor-Menor</option>
-  <option value="vendedor-asc">Proveedor A-Z</option>
-  <option value="vendedor-desc">Proveedor Z-A</option>
-  <option value="localidad-asc">Localidad A-Z</option>
-  <option value="localidad-desc">Localidad Z-A</option>
-</select>
+    <label for="ordenarPor">Ordenar por:</label>
+    <select id="ordenarPor">
+      <option value="producto-asc">Producto A-Z</option>
+      <option value="producto-desc">Producto Z-A</option>
+      <option value="precio-asc">Precio Menor-Mayor</option>
+      <option value="precio-desc">Precio Mayor-Menor</option>
+      <option value="vendedor-asc">Proveedor A-Z</option>
+      <option value="vendedor-desc">Proveedor Z-A</option>
+      <option value="localidad-asc">Localidad A-Z</option>
+      <option value="localidad-desc">Localidad Z-A</option>
+    </select>
 
-<div id="listaProductos"></div>
+    <div id="listaProductos"></div>
 
     <!-- Modal de compra -->
-<div id="modalCompra" style="display:none;">
-  <h3>Comprar producto</h3>
-  <p id="productoSeleccionado"></p>
-  <input type="number" id="cantidadCompra" placeholder="Cantidad a comprar" min="1" />
-  <button id="btnComprar">Comprar</button>
-  <button onclick="cerrarModal()">Cancelar</button>
-</div>
-
+    <div id="modalCompra" style="display:none;">
+      <h3>Comprar producto</h3>
+      <p id="productoSeleccionado"></p>
+      <input type="number" id="cantidadCompra" placeholder="Cantidad a comprar" min="1" />
+      <button id="btnComprar">Comprar</button>
+      <button onclick="cerrarModal()">Cancelar</button>
+    </div>
   </main>
 
   <script src="app.js"></script>
@@ -60,10 +58,39 @@
         window.location.href = url;
       }
     }
+
+    // ✅ Estilos dinámicos para el modal
+    const style = document.createElement('style');
+    style.textContent = `
+      #modalCompra {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #f9f9f9;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        z-index: 1000;
+        width: 300px;
+        text-align: center;
+      }
+      #modalCompra h3 {
+        margin-top: 0;
+      }
+      #modalCompra input {
+        width: 80%;
+        padding: 8px;
+        margin: 10px 0;
+      }
+      #modalCompra button {
+        margin: 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
-
-
-
-

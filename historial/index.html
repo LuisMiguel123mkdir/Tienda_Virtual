@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Historial de Compras</title>
+  <link rel="stylesheet" href="../style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
 
+  <!-- Protección: verificar si está logueado -->
+  <script>
+    if (localStorage.getItem('isAdmin') !== 'true') {
+      window.location.href = "login/login.html";
+    }
+    function irASeccion(url) {
+      if (url) window.location.href = url;
+    }
+    function logout() {
+      localStorage.removeItem('isAdmin');
+      window.location.href = '../index.html';
+    }
+  </script>
+
+  <!-- Barra superior -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <h1>Historial de Compras</h1>
+    </div>
+    <div class="navbar-right">
+      <select id="menuOpciones" onchange="irASeccion(this.value)">
+        <option value="">Menú</option>
+        <option value="index.html">Panel Admin</option>
+        <option value="../index.html">Principal</option>
+      </select>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main>
+    <h2>Listado de ventas registradas</h2>
+    <div id="listaVentas"></div>
+    <button onclick="logout()">Cerrar sesión</button>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

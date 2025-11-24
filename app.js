@@ -61,9 +61,10 @@ async function comprarProducto(producto) {
 
   // 3. Confirmación y refresco
   alert("Compra realizada con éxito");
-  cerrarModal();
-  cargarProductos(); // refrescar lista
+  cerrarModal();          // cerrar el modal
+  cargarProductos();      // refrescar lista
 }
+
 
 // Cargar productos
 async function cargarProductos() {

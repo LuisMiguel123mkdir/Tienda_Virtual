@@ -1,50 +1,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f4f6f8; /* fondo gris claro para contraste */
-}
-
-/* Estilos para el modal de compra */
-#modalCompra {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #f9f9f9;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  z-index: 1000;
-  width: 300px;
-  text-align: center;
-}
-
-#modalCompra h3 {
-  margin-top: 0;
-}
-
-#modalCompra input {
-  width: 80%;
-  padding: 8px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-#modalCompra button {
-  margin: 5px;
-  padding: 8px 12px;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-  background-color: #2c3e50;
-  color: white;
-  transition: background-color 0.3s ease;
-}
-
-#modalCompra button:hover {
-  background-color: #34495e;
+  background-color: #f4f6f8; /* fondo gris claro */
 }
 
 /* Barra superior */
@@ -95,4 +52,48 @@ body {
 #listaProductos tr:hover {
   background-color: #e0e0e0;
   cursor: pointer;
+}
+
+/* Modal de compra */
+#modalCompra {
+  display: none; /* oculto por defecto */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f9f9f9;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 1000;
+  width: 300px;
+  text-align: center;
+}
+
+#modalCompra h3 {
+  margin-top: 0;
+}
+
+#modalCompra input {
+  width: 80%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modalCompra button {
+  margin: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #2c3e50;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+#modalCompra button:hover {
+  background-color: #34495e;
 }

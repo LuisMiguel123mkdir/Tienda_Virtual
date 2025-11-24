@@ -8,7 +8,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
 
 let productosGlobal = [];
 
-//compra
+// Comprar producto
 async function comprarProducto(producto) {
   const cantidad = parseInt(document.getElementById('cantidadCompra').value, 10);
   if (isNaN(cantidad) || cantidad <= 0) {
@@ -35,7 +35,7 @@ async function comprarProducto(producto) {
     return;
   }
 
-  // 2. Actualizar stock
+  // 2. Actualizar stock o eliminar producto
   const nuevoStock = producto.cantidad - cantidad;
   if (nuevoStock > 0) {
     const { error } = await supabaseClient
@@ -48,7 +48,6 @@ async function comprarProducto(producto) {
       return;
     }
   } else {
-    // 3. Eliminar producto si stock llega a 0
     const { error } = await supabaseClient
       .from('producto')
       .delete()
@@ -60,56 +59,26 @@ async function comprarProducto(producto) {
     }
   }
 
-  // 👉 Aquí van tus tres líneas finales
+  // 3. Confirmación y refresco
   alert("Compra realizada con éxito");
   cerrarModal();
   cargarProductos(); // refrescar lista
 }
 
-  // 2. Actualizar stock
-  const nuevoStock = producto.cantidad - cantidad;
-  if (nuevoStock > 0) {
-    const { error } = await supabaseClient
-      .from('producto')
-      .update({ cantidad: nuevoStock })
-      .eq('id', producto.id);
-    if (error) {
-      console.error("Error al actualizar stock:", error);
-      alert("Error al actualizar stock");
-      return;
-    }
-  } else {
-    // 3. Eliminar producto si stock llega a 0
-    const { error } = await supabaseClient
-      .from('producto')
-      .delete()
-      .eq('id', producto.id);
-    if (error) {
-      console.error("Error al eliminar producto:", error);
-      alert("Error al eliminar producto");
-      return;
-    }
-  }
-
-  alert("Compra realizada con éxito");
-  cerrarModal();
-  mostrarProductosDeVendedor(producto.vendedor_id); // refrescar lista
-}
-
 // Cargar productos
 async function cargarProductos() {
-const { data, error } = await supabaseClient
-  .from('producto')
-  .select(`
-    id,
-    producto,
-    precio,
-    cantidad,
-    vendedor: vendedor_id (
-      nombre,
-      zona
-    )
-  `);
+  const { data, error } = await supabaseClient
+    .from('producto')
+    .select(`
+      id,
+      producto,
+      precio,
+      cantidad,
+      vendedor: vendedor_id (
+        nombre,
+        zona
+      )
+    `);
 
   if (error) {
     console.error("Error al cargar productos:", error);
@@ -121,7 +90,7 @@ const { data, error } = await supabaseClient
   mostrarProductos(productosGlobal);
 }
 
-// Mostrar productos
+// Mostrar productos en tabla
 function mostrarProductos(lista) {
   const contenedor = document.getElementById('listaProductos');
   contenedor.innerHTML = "";
@@ -151,6 +120,8 @@ function mostrarProductos(lista) {
       <td>${item.vendedor?.nombre || "N/A"}</td>
       <td>${item.vendedor?.zona || "N/A"}</td>
     `;
+    // Al hacer clic en la fila → abrir modal
+    fila.addEventListener('click', () => abrirModal(item));
     tabla.appendChild(fila);
   });
 
@@ -192,14 +163,7 @@ function ordenarProductos() {
   mostrarProductos(listaOrdenada);
 }
 
-//Cuando renderices la lista de productos, agrega un listener:
-function renderProducto(item) {
-  const li = document.createElement('li');
-  li.textContent = `${item.producto} — $${item.precio} — Cantidad: ${item.cantidad}`;
-  li.addEventListener('click', () => abrirModal(item));
-  return li;
-}
-
+// Modal
 function abrirModal(producto) {
   document.getElementById('modalCompra').style.display = 'block';
   document.getElementById('productoSeleccionado').textContent =

@@ -8,6 +8,63 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
 
 let productosGlobal = [];
 
+//compra
+async function comprarProducto(producto) {
+  const cantidad = parseInt(document.getElementById('cantidadCompra').value, 10);
+  if (isNaN(cantidad) || cantidad <= 0) {
+    alert("Ingresa una cantidad válida");
+    return;
+  }
+  if (cantidad > producto.cantidad) {
+    alert("No hay suficiente stock");
+    return;
+  }
+
+  // 1. Insertar reporte en tabla "ventas"
+  const { error: errorReporte } = await supabaseClient
+    .from('ventas')
+    .insert([{
+      producto_id: producto.id,
+      cantidad,
+      fecha: new Date().toISOString()
+    }]);
+
+  if (errorReporte) {
+    console.error("Error al generar reporte:", errorReporte);
+    alert("Error al registrar la compra");
+    return;
+  }
+
+  // 2. Actualizar stock
+  const nuevoStock = producto.cantidad - cantidad;
+  if (nuevoStock > 0) {
+    const { error } = await supabaseClient
+      .from('producto')
+      .update({ cantidad: nuevoStock })
+      .eq('id', producto.id);
+    if (error) {
+      console.error("Error al actualizar stock:", error);
+      alert("Error al actualizar stock");
+      return;
+    }
+  } else {
+    // 3. Eliminar producto si stock llega a 0
+    const { error } = await supabaseClient
+      .from('producto')
+      .delete()
+      .eq('id', producto.id);
+    if (error) {
+      console.error("Error al eliminar producto:", error);
+      alert("Error al eliminar producto");
+      return;
+    }
+  }
+
+  alert("Compra realizada con éxito");
+  cerrarModal();
+  mostrarProductosDeVendedor(producto.vendedor_id); // refrescar lista
+}
+
 // Cargar productos
 async function cargarProductos() {
   const { data, error } = await supabaseClient
@@ -101,6 +158,25 @@ function ordenarProductos() {
   }
 
   mostrarProductos(listaOrdenada);
+}
+
+//Cuando renderices la lista de productos, agrega un listener:
+function renderProducto(item) {
+  const li = document.createElement('li');
+  li.textContent = `${item.producto} — $${item.precio} — Cantidad: ${item.cantidad}`;
+  li.addEventListener('click', () => abrirModal(item));
+  return li;
+}
+
+function abrirModal(producto) {
+  document.getElementById('modalCompra').style.display = 'block';
+  document.getElementById('productoSeleccionado').textContent =
+    `${producto.producto} (Disponible: ${producto.cantidad})`;
+  document.getElementById('btnComprar').onclick = () => comprarProducto(producto);
+}
+
+function cerrarModal() {
+  document.getElementById('modalCompra').style.display = 'none';
 }
 
 // Inicializar
